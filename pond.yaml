@@ -1,0 +1,165 @@
+openapi: 3.0.1
+info:
+  title: Pond Escape API
+  description: "This is a sample server Petstore server. You can find out more about\
+    \ Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).\
+    \ For this sample, you can use the api key `special-key` to test the authorization\
+    \ filters."
+  termsOfService: http://swagger.io/terms/
+  license:
+    name: Apache 2.0
+    url: http://springdoc.org
+  version: 0.0.0
+servers:
+- url: http://localhost:5000
+  description: Generated server url
+paths:
+  /game/newGameSession:
+    post:
+      tags:
+      - circle-escape-controller
+      operationId: startNewGameVanillaSession
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Pair'
+  /game/planPolarSession:
+    post:
+      tags:
+      - circle-escape-controller
+      operationId: planStepPolarSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PairGenericPolarCoordinates'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TurnResponse'
+  /game/stepPolarSession:
+    post:
+      tags:
+      - circle-escape-controller
+      operationId: makeStepPolarSession
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PairGenericPolarCoordinates'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TurnResponse'
+components:
+  schemas:
+    Cat:
+      required:
+      - theta
+      type: object
+      properties:
+        theta:
+          type: number
+          format: double
+    GameState:
+      required:
+      - cat
+      - duck
+      - radius
+      - speedFactor
+      - state
+      type: object
+      properties:
+        speedFactor:
+          type: number
+          format: double
+        radius:
+          type: number
+          format: double
+        duck:
+          $ref: '#/components/schemas/PolarCoordinates'
+        cat:
+          $ref: '#/components/schemas/Cat'
+        state:
+          $ref: '#/components/schemas/TurnResult'
+    Pair:
+      required:
+      - gamestate
+      - sessionID
+      type: object
+      properties:
+        sessionID:
+          type: integer
+          format: int32
+        gamestate:
+          $ref: '#/components/schemas/GameState'
+    PolarCoordinates:
+      required:
+      - r
+      - theta
+      type: object
+      properties:
+        r:
+          minimum: 0
+          type: number
+          format: double
+        theta:
+          type: number
+          format: double
+    TurnResult:
+      type: string
+      enum:
+      - WIN
+      - LOOSE
+      - ONGOING
+    PairGenericPolarCoordinates:
+      required:
+      - sessionID
+      - t
+      type: object
+      properties:
+        sessionID:
+          type: integer
+          format: int32
+        t:
+          $ref: '#/components/schemas/PolarCoordinates'
+      description: My DTO
+    TurnResponse:
+      required:
+      - cat
+      - duck
+      - state
+      type: object
+      properties:
+        duck:
+          $ref: '#/components/schemas/PolarCoordinates'
+        cat:
+          $ref: '#/components/schemas/Cat'
+        state:
+          $ref: '#/components/schemas/TurnResult'
+  parameters:
+    myHeader1:
+      name: myHeader1
+      in: header
+      schema:
+        type: string
+  headers:
+    myHeader2:
+      description: myHeader2 header
+      schema:
+        type: string
+  securitySchemes:
+    basicScheme:
+      type: http
+      scheme: basic
